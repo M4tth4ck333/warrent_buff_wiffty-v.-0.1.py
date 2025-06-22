@@ -284,8 +284,6 @@ telco
 telecom
 tellabs
 temp1
-the 6 last digit of the MAC adress
-the same all over
 tiara
 tiaranet
 tiger
