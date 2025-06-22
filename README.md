@@ -1,78 +1,86 @@
-warrent_buff_wiffty-v.-0.1.py – Das modulare WiFi-Framework
+#warrent_buff_wiffty-v-0_1.py
 
-Warren BuffyKi ist das zentrale Framework für alle WiFi- und WLAN-Sicherheitsanalysen, Angriffe und Defensive-Mechaniken.
-Alle anderen Funktionen (Bluetooth, SDR, GPS, Visualisierung, KI-Module für andere Bereiche) sind als separate, eigenständige Module konzipiert und werden nicht direkt in das Kern-Framework integriert.
-Kernprinzipien
+Das modulare WiFi-Framework
+    Überblick
+    
+    warrent_buff_wiffty-v-0_1.py ist ein flexibles, modulares Python-Framework für moderne WLAN-Sicherheitsanalysen
+    Angriffssimulationen und Abwehrmechanismen. Es ist speziell darauf ausgelegt, als Kern für WiFi-Tests und -Automatisierung zu dienen.
+    Alle weiteren Technologien (Bluetooth, SDR, GPS, Visualisierung, KI für andere Bereiche) werden als separate Module oder Plugins angebunden.
+    Hauptfunktionen
+    
+        WLAN-Scanning und -Analyse (inkl. WiFi 6/WPA3)
+    
+        Automatisierte Angriffs- und Defense-Ketten (Deauth, Dragonblood, Evil Twin, PMF-Checks)
+    
+        KI-gestützte Schwachstellenbewertung und Angriffsauswahl
+    
+        Blue-Team-Mechaniken (Detection, Härtung, Reporting)
+    
+        Kompatibilität mit Scapy, airopy und modernen WiFi-Tools
+    
+        Saubere API für Erweiterungen
+    
+    Architektur
+    
+    text
+    warrent_buff_wiffty/
+    ├── core/           # Zentrale Steuerung, API, Authentifizierung
+    ├── wifi/           # WLAN-Module: Scanning, Angriffe, Defense, Reporting, KI
+    ├── plugins/        # Schnittstellen zu externen Modulen (Bluetooth, SDR, etc.)
+    ├── utils/          # Hilfsfunktionen, Logging
+    ├── docs/           # Dokumentation, HowTos
+    ├── main.py         # Einstiegspunkt
+    └── README.md
+    
+    Namenskonventionen (PEP 8)
+    
+        Dateinamen/Module:
+        Kleinbuchstaben, ggf. mit Unterstrichen für Lesbarkeit (z. B. wifi_scanner.py, attack_manager.py)
+    
+    .
+    
+    Klassen:
+    CamelCase (z. B. WifiScanner, DeauthAttack)
+    
+    .
+    
+    Funktionen/Variablen:
+    Kleinbuchstaben, mit Unterstrichen (z. B. scan_networks, run_attack)
 
-    Monolithisches WiFi-Framework:
-    Warren BuffyKi bündelt alle Funktionen rund um WLAN: Scanning, Angriff, Verteidigung, Protokollanalyse, Automatisierung und Reporting.
+.
 
-    Klare Modultrennung:
-    Jedes weitere Feature (z. B. Bluetooth, SDR, 3D-Visualisierung, KI für andere Protokolle) wird als eigenständiges, lose gekoppeltes Modul entwickelt und kann unabhängig vom WiFi-Framework betrieben oder integriert werden.
+Konstanten:
+GROSSBUCHSTABEN_MIT_UNTERSTRICH
 
-    Maximale Erweiterbarkeit:
-    Neue Technologien, Angriffsmethoden oder Defense-Strategien lassen sich als Plug-in oder externes Modul einfach andocken.
+    .
 
-    Saubere Schnittstellen:
-    Kommunikation zwischen Warren BuffyKi und anderen Modulen erfolgt über klar definierte APIs oder Schnittstellen – keine Vermischung im Core.
+    Tipp: Diese Konventionen sorgen für Klarheit, Wartbarkeit und Kompatibilität mit Python-Ökosystemen.
 
-Features von Warren BuffyKi
+Erweiterbarkeit
 
-    WLAN-Scanning und -Analyse (WiFi 6/WPA3 ready)
+    Eigene Module/Plugins können einfach angebunden werden (z. B. für Bluetooth, SDR, 3D-Visualisierung).
 
-    Automatisierte Angriffs- und Defense-Ketten (z. B. Dragonblood, Deauth, Evil Twin, PMF-Checks)
+    API-Schnittstellen ermöglichen die Integration externer Tools und Automatisierungsskripte.
 
-    KI-gestützte Schwachstellenbewertung und Angriffsauswahl
+    Klare Trennung von WiFi-Kern und Zusatzfunktionen für maximale Wartbarkeit.
 
-    Blue-Team-Mechaniken (Erkennung, Härtung, Reporting)
+Beispiel: Modulstruktur
 
-    Kompatibilität mit Scapy, airopy und weiteren modernen WiFi-Tools
+python
+# wifi_scanner.py
+class WifiScanner:
+    def scan_networks(self):
+        # Implementierung
+        pass
 
-    Moderne Visualisierung (z. B. Matplotlib, optional Schnittstelle zu 3D/UE6-Modulen)
+Vorteile
 
-Architekturüberblick
+    Fokus auf WiFi:
+    Keine Vermischung mit anderen Technologien im Kern.
 
-text
-warren-buffyki/
-├── core/           # Zentrale Steuerung, API, Authentifizierung
-├── wifi/           # Alle WLAN-bezogenen Module & Engines
-│   ├── scanning/
-│   ├── attacks/
-│   ├── defense/
-│   ├── reporting/
-│   └── ki/
-├── plugins/        # Schnittstellen zu externen Modulen (Bluetooth, SDR, etc.)
-├── utils/          # Hilfsfunktionen, Logging, Dateimanagement
-├── docs/           # Dokumentation, HowTos
-├── main.py         # Einstiegspunkt
-└── README.md
+    Maximale Flexibilität:
+    Neue Features und Technologien können als separate Module entwickelt werden.
 
-Separate Module (Beispiele)
+    Saubere, wartbare Codebasis durch Einhaltung von PEP 8 und Best Practices.
 
-    Bluetooth-Modul (eigenständig, mit eigener API)
-
-    SDR-Modul (z. B. HackRF, eigenständig)
-
-    GPS-Modul (optional, für Standortanalysen)
-
-    3D-Visualisierung (z. B. mit Unreal Engine 6, angebunden über API)
-
-    KI-Module für andere Protokolle oder Defense-Szenarien
-
-Vorteile dieser Struktur
-
-    Wartbarkeit:
-    WiFi-Funktionen bleiben fokussiert und übersichtlich, Updates sind einfacher.
-
-    Flexibilität:
-    Du kannst neue Technologien oder Features schnell als separate Module entwickeln und testen.
-
-    Sicherheit:
-    Klare Trennung der Verantwortlichkeiten, weniger Risiko durch Code-Vermischung.
-
-    Skalierbarkeit:
-    Das Framework wächst mit deinen Anforderungen, ohne an Übersichtlichkeit zu verlieren.
-
-Warren BuffyKi – Das Rückgrat deiner WLAN-Sicherheitsforschung. Alles andere bleibt modular und unabhängig.
-
-(Für Fragen, Erweiterungsideen oder Modulvorschläge: Issue eröffnen oder Kontakt aufnehmen!)
+Starte jetzt mit warrent_buff_wiffty-v-0_1.py und bringe deine WLAN-Sicherheitsanalysen auf das nächste Level!
