@@ -55,23 +55,23 @@ Es kombiniert klassische Angriffe (WEP/WPA/WPS), KI-gestützte Zielauswahl und P
 
 🗂️ Projektstruktur (modular & erweiterbar)
 
-text
-warrent_buff_wiffty/
-├── attack/
-│   ├── evil_twin/        # Hostapd, DNSMasq, Deauth, Validator, Webserver
-│   └── pmkid.py          # PMKID Capture & Hash Conversion
-├── tools/
-│   ├── cracker_base.py   # Cracker-Wrapper
-│   └── hashcat.py / crunch.py / aircrack.py / ...
-├── db/
-│   └── wifite.db         # SQLite-DB: Targets, Passwortversuche etc.
-├── config/
-│   ├── setup.cfg         # Installations- & Modulkonfiguration
-│   └── hostapd.tpl / dnsmasq.tpl / ...
-├── main/
-│   └── warrent_buff_wiffty-v.0.1.py   # CLI-Entry Point
-└── README.md
 
+        warrent_buff_wiffty/
+        ├── attack/
+        │   ├── evil_twin/        # Hostapd, DNSMasq, Deauth, Validator, Webserver
+        │   └── pmkid.py          # PMKID Capture & Hash Conversion
+        ├── tools/
+        │   ├── cracker_base.py   # Cracker-Wrapper
+        │   └── hashcat.py / crunch.py / aircrack.py / ...
+        ├── db/
+        │   └── wifite.db         # SQLite-DB: Targets, Passwortversuche etc.
+        ├── config/
+        │   ├── setup.cfg         # Installations- & Modulkonfiguration
+        │   └── hostapd.tpl / dnsmasq.tpl / ...
+        ├── main/
+        │   └── warrent_buff_wiffty-v.0.1.py   # CLI-Entry Point
+        └── README.md
+        
 ⚡ Installation & Setup
 Systemvoraussetzungen (Debian/Ubuntu)
 
