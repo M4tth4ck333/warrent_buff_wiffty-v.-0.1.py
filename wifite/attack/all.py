@@ -1,24 +1,35 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from .wep import AttackWEP
 from .wpa import AttackWPA
+from .wpa3 import AttackWPA3
 from .wps import AttackWPS
 from .pmkid import AttackPMKID
+from .hci import AttackHCI
 from ..config import Configuration
 from ..util.color import Color
+import logging
 
-class AttackAll(object):
+class AttackAll:
+    SUPPORTED_ATTACKS = [
+        ('WEP', AttackWEP),
+        ('WPA3', AttackWPA3),
+        ('WPA', AttackWPA),
+        ('WPS', AttackWPS),
+        ('PMKID', AttackPMKID),
+        ('HCI', AttackHCI),
+        # Weitere Angriffsklassen können hier ergänzt werden
+    ]
 
     @classmethod
     def attack_multiple(cls, targets):
-        '''
-        Attacks all given `targets` (list[wifite.model.target]) until user interruption.
-        Returns: Number of targets that were attacked (int)
-        '''
-        if any(t.wps for t in targets) and not AttackWPS.can_attack_wps():
-            # Warn that WPS attacks are not available.
-            Color.pl('{!} {O}Note: WPS attacks are not possible because you do not have {C}reaver{O} nor {C}bully{W}')
+        """
+        Führt Angriffe auf alle angegebenen Ziele aus.
+        Gibt die Anzahl der angegriffenen Ziele zurück.
+        """
+        if any(getattr(t, 'wps', False) for t in targets) and not AttackWPS.can_attack_wps():
+            Color.pl('{!} {O}Hinweis: WPS-Angriffe sind nicht möglich (reaver/bully fehlen)')
 
         attacked_targets = 0
         targets_remaining = len(targets)
@@ -26,11 +37,10 @@ class AttackAll(object):
             attacked_targets += 1
             targets_remaining -= 1
 
-            bssid = target.bssid
-            essid = target.essid if target.essid_known else '{O}ESSID unknown{W}'
+            bssid = getattr(target, 'bssid', 'unbekannt')
+            essid = getattr(target, 'essid', '{O}ESSID unbekannt{W}') if getattr(target, 'essid_known', False) else '{O}ESSID unbekannt{W}'
 
-            Color.pl('\n{+} ({G}%d{W}/{G}%d{W})' % (index, len(targets)) +
-                     ' Starting attacks against {C}%s{W} ({C}%s{W})' % (bssid, essid))
+            Color.pl('\n{+} ({G}%d{W}/{G}%d{W}) Starte Angriff auf {C}%s{W} ({C}%s{W})' % (index, len(targets), bssid, essid))
 
             should_continue = cls.attack_single(target, targets_remaining)
             if not should_continue:
@@ -40,102 +50,116 @@ class AttackAll(object):
 
     @classmethod
     def attack_single(cls, target, targets_remaining):
-        '''
-        Attacks a single `target` (wifite.model.target).
-        Returns: True if attacks should continue, False otherwise.
-        '''
+        """
+        Führt alle passenden Angriffe auf ein Ziel aus.
+        Gibt True zurück, wenn mit weiteren Zielen fortgefahren werden soll.
+        """
+        attacks = cls._resolve_attacks(target)
 
-        attacks = []
+        if not attacks:
+            Color.pl('{!} {R}Fehler: {O}Kein passender Angriff verfügbar')
+            return True
 
-        if Configuration.use_eviltwin:
-            # TODO: EvilTwin attack
-            pass
-
-        elif 'WEP' in target.encryption:
-            attacks.append(AttackWEP(target))
-
-        elif 'WPA' in target.encryption:
-            # WPA can have multiple attack vectors:
-
-            # WPS
-            if not Configuration.use_pmkid_only:
-                if target.wps != False and AttackWPS.can_attack_wps():
-                    # Pixie-Dust
-                    if Configuration.wps_pixie:
-                        attacks.append(AttackWPS(target, pixie_dust=True))
-
-                    # PIN attack
-                    if Configuration.wps_pin:
-                        attacks.append(AttackWPS(target, pixie_dust=False))
-
-            if not Configuration.wps_only:
-                # PMKID
-                attacks.append(AttackPMKID(target))
-
-                # Handshake capture
-                if not Configuration.use_pmkid_only:
-                    attacks.append(AttackWPA(target))
-
-        if len(attacks) == 0:
-            Color.pl('{!} {R}Error: {O}Unable to attack: no attacks available')
-            return True  # Keep attacking other targets (skip)
-
-        while len(attacks) > 0:
+        while attacks:
             attack = attacks.pop(0)
             try:
                 result = attack.run()
                 if result:
-                    break  # Attack was successful, stop other attacks.
-            except Exception as e:
-                Color.pexception(e)
-                continue
+                    break  # Erfolg: keine weiteren Angriffe auf dieses Ziel
             except KeyboardInterrupt:
-                Color.pl('\n{!} {O}Interrupted{W}\n')
+                Color.pl('\n{!} {O}Unterbrochen{W}\n')
                 answer = cls.user_wants_to_continue(targets_remaining, len(attacks))
                 if answer is True:
-                    continue  # Keep attacking the same target (continue)
+                    continue
                 elif answer is None:
-                    return True  # Keep attacking other targets (skip)
+                    return True
                 else:
-                    return False  # Stop all attacks (exit)
+                    return False
+            except Exception as e:
+                logging.exception(f"Fehler bei Angriff auf {getattr(target, 'bssid', 'unbekannt')}: {e}")
+                Color.pexception(e)
+                continue
 
-        if attack.success:
-            attack.crack_result.save()
+        if getattr(attack, 'success', False):
+            try:
+                attack.crack_result.save()
+            except Exception as e:
+                logging.error(f"Fehler beim Speichern des Angriffsresultats: {e}")
 
-        return True  # Keep attacking other targets
+        return True
 
+    @classmethod
+    def _resolve_attacks(cls, target):
+        """
+        Ermittelt und instanziiert alle passenden Angriffsobjekte für das Ziel.
+        """
+        attacks = []
+
+        encryption = getattr(target, 'encryption', '').upper()
+        wps_enabled = getattr(target, 'wps', False)
+        hci_enabled = getattr(target, 'hci', False)
+
+        # EvilTwin als Beispiel für weitere Angriffsarten
+        if getattr(Configuration, 'use_eviltwin', False):
+            # TODO: EvilTwin-Angriff implementieren
+            pass
+
+        # WPA3
+        if 'WPA3' in encryption:
+            attacks.append(AttackWPA3(target))
+
+        # WPA2/WPA
+        elif 'WPA' in encryption:
+            # WPS (sofern nicht nur PMKID gewünscht)
+            if not Configuration.use_pmkid_only and wps_enabled and AttackWPS.can_attack_wps():
+                if Configuration.wps_pixie:
+                    attacks.append(AttackWPS(target, pixie_dust=True))
+                if Configuration.wps_pin:
+                    attacks.append(AttackWPS(target, pixie_dust=False))
+            if not Configuration.wps_only:
+                attacks.append(AttackPMKID(target))
+                if not Configuration.use_pmkid_only:
+                    attacks.append(AttackWPA(target))
+
+        # WEP
+        elif 'WEP' in encryption:
+            attacks.append(AttackWEP(target))
+
+        # Bluetooth (HCI)
+        if hci_enabled:
+            attacks.append(AttackHCI(target))
+
+        return attacks
 
     @classmethod
     def user_wants_to_continue(cls, targets_remaining, attacks_remaining=0):
-        '''
-        Asks user if attacks should continue onto other targets
-        Returns:
-            True if user wants to continue, False otherwise.
-        '''
+        """
+        Fragt den Nutzer, ob weitere Angriffe/Targets bearbeitet werden sollen.
+        """
         if attacks_remaining == 0 and targets_remaining == 0:
-            return  # No targets or attacksleft, drop out
+            return  # Keine Ziele oder Angriffe mehr
 
         prompt_list = []
         if attacks_remaining > 0:
-            prompt_list.append(Color.s('{C}%d{W} attack(s)' % attacks_remaining))
+            prompt_list.append(Color.s('{C}%d{W} Angriff(e)' % attacks_remaining))
         if targets_remaining > 0:
-            prompt_list.append(Color.s('{C}%d{W} target(s)' % targets_remaining))
-        prompt = ' and '.join(prompt_list) + ' remain'
+            prompt_list.append(Color.s('{C}%d{W} Ziel(e)' % targets_remaining))
+        prompt = ' und '.join(prompt_list) + ' verbleiben'
         Color.pl('{+} %s' % prompt)
 
-        prompt = '{+} Do you want to'
+        prompt = '{+} Möchtest du'
         options = '('
 
         if attacks_remaining > 0:
-            prompt += ' {G}continue{W} attacking,'
-            options += '{G}C{W}{D}, {W}'
+            prompt += ' {G}weiter{W} angreifen,'
+            options += '{G}w{W}{D}, {W}'
 
         if targets_remaining > 0:
-            prompt += ' {O}skip{W} to the next target,'
+            prompt += ' {O}zum nächsten Ziel springen,'
             options += '{O}s{W}{D}, {W}'
 
         options += '{R}e{W})'
-        prompt += ' or {R}exit{W} %s? {C}' % options
+        prompt += ' oder {R}beenden{W} %s? {C}' % options
 
         from ..util.input import raw_input
         answer = raw_input(Color.s(prompt)).lower()
@@ -146,4 +170,3 @@ class AttackAll(object):
             return False  # Exit
         else:
             return True  # Continue
-
