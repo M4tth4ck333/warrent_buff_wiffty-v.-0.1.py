@@ -1,86 +1,116 @@
-#warrent_buff_wiffty-v-0_1.py
+🧠🔓 Warrent Buff WiFFT[y] v0.1 – Wireless Attack Framework Reloaded
 
-Das modulare WiFi-Framework
-    Überblick
-    
-    warrent_buff_wiffty-v-0_1.py ist ein flexibles, modulares Python-Framework für moderne WLAN-Sicherheitsanalysen
-    Angriffssimulationen und Abwehrmechanismen. Es ist speziell darauf ausgelegt, als Kern für WiFi-Tests und -Automatisierung zu dienen.
-    Alle weiteren Technologien (Bluetooth, SDR, GPS, Visualisierung, KI für andere Bereiche) werden als separate Module oder Plugins angebunden.
-    Hauptfunktionen
-    
-        WLAN-Scanning und -Analyse (inkl. WiFi 6/WPA3)
-    
-        Automatisierte Angriffs- und Defense-Ketten (Deauth, Dragonblood, Evil Twin, PMF-Checks)
-    
-        KI-gestützte Schwachstellenbewertung und Angriffsauswahl
-    
-        Blue-Team-Mechaniken (Detection, Härtung, Reporting)
-    
-        Kompatibilität mit Scapy, airopy und modernen WiFi-Tools
-    
-        Saubere API für Erweiterungen
-    
-    Architektur
-    
-    text
-    warrent_buff_wiffty/
-    ├── core/           # Zentrale Steuerung, API, Authentifizierung
-    ├── wifi/           # WLAN-Module: Scanning, Angriffe, Defense, Reporting, KI
-    ├── plugins/        # Schnittstellen zu externen Modulen (Bluetooth, SDR, etc.)
-    ├── utils/          # Hilfsfunktionen, Logging
-    ├── docs/           # Dokumentation, HowTos
-    ├── main.py         # Einstiegspunkt
-    └── README.md
-    
-    Namenskonventionen (PEP 8)
-    
-        Dateinamen/Module:
-        Kleinbuchstaben, ggf. mit Unterstrichen für Lesbarkeit (z. B. wifi_scanner.py, attack_manager.py)
-    
-    .
-    
-    Klassen:
-    CamelCase (z. B. WifiScanner, DeauthAttack)
-    
-    .
-    
-    Funktionen/Variablen:
-    Kleinbuchstaben, mit Unterstrichen (z. B. scan_networks, run_attack)
+    ⚙️ Modular. 🧠 KI-gestützt. 🕵️ Evil Twin Ready.
+    "If Buffett did Wi-Fi audits..." – by Jan
 
-.
+🚀 Überblick
 
-Konstanten:
-GROSSBUCHSTABEN_MIT_UNTERSTRICH
+Warrent Buff WiFFT[y] ist ein modernes, modulares Wireless-Audit-Framework für Pentester, Red Teams und Security-Forscher.
+Es kombiniert klassische Angriffe (WEP/WPA/WPS), KI-gestützte Zielauswahl und Passwortgenerierung, Evil Twin Automation und ein flexibles Datenbank-Backend – alles steuerbar per CLI, bald auch per GUI.
+💡 Features
 
-    .
+    Klassische Wireless Attacks:
 
-    Tipp: Diese Konventionen sorgen für Klarheit, Wartbarkeit und Kompatibilität mit Python-Ökosystemen.
+        WEP, WPA/WPA2, WPS (Aircrack-ng Suite, Reaver, Hashcat, Crunch)
 
-Erweiterbarkeit
+    🧠 KI-Unterstützung (LLM/GPT):
 
-    Eigene Module/Plugins können einfach angebunden werden (z. B. für Bluetooth, SDR, 3D-Visualisierung).
+        Dynamische Wortlisten aus SSID/BSSID/Vendor
 
-    API-Schnittstellen ermöglichen die Integration externer Tools und Automatisierungsskripte.
+        Smarte Zielauswahl (MAC → Hersteller → Angriffsmethode)
 
-    Klare Trennung von WiFi-Kern und Zusatzfunktionen für maximale Wartbarkeit.
+        Social Engineering Text-Injection für Evil Twin (zeit- & ortsabhängig)
 
-Beispiel: Modulstruktur
+    🕸️ Evil Twin Automation:
 
-python
-# wifi_scanner.py
-class WifiScanner:
-    def scan_networks(self):
-        # Implementierung
-        pass
+        Fake-AP mit hostapd, DHCP/DNS-Umleitung (dnsmasq), Captive Portal (Webserver)
 
-Vorteile
+        Vendor-spezifische Loginseiten (ASUS, TP-Link, FritzBox, etc.)
 
-    Fokus auf WiFi:
-    Keine Vermischung mit anderen Technologien im Kern.
+        Passwortvalidierung gegen echten AP, automatische Deauthentifizierung
 
-    Maximale Flexibilität:
-    Neue Features und Technologien können als separate Module entwickelt werden.
+    PMKID-Attacke:
 
-    Saubere, wartbare Codebasis durch Einhaltung von PEP 8 und Best Practices.
+        hcxdumptool + hashcat für clientlose WPA2/PMKID-Angriffe
 
-Starte jetzt mit warrent_buff_wiffty-v-0_1.py und bringe deine WLAN-Sicherheitsanalysen auf das nächste Level!
+    Zentrale SQLite-Datenbank:
+
+        Speicherung von Zielen, Passwortversuchen, Cracks, AI-Entscheidungen
+
+    Cracker-Wrapper-Modul:
+
+        Einheitliche Schnittstelle für Hashcat, John, Pyrit, Crunch etc.
+
+    Wortlisten-Generator:
+
+        GPT-basierte Heuristik + Crunch-Regeln für gezielte Passwortlisten
+
+    Docker & Singularity Support:
+
+        Für portable, reproduzierbare Pentest-Umgebungen
+
+    Zukunfts-Module:
+
+        GUI (Tkinter, OpenGL), Bluetooth/BLE, Drohnen-Bridge, lokale GPT-Modelle
+
+🗂️ Projektstruktur (modular & erweiterbar)
+
+text
+warrent_buff_wiffty/
+├── attack/
+│   ├── evil_twin/        # Hostapd, DNSMasq, Deauth, Validator, Webserver
+│   └── pmkid.py          # PMKID Capture & Hash Conversion
+├── tools/
+│   ├── cracker_base.py   # Cracker-Wrapper
+│   └── hashcat.py / crunch.py / aircrack.py / ...
+├── db/
+│   └── wifite.db         # SQLite-DB: Targets, Passwortversuche etc.
+├── config/
+│   ├── setup.cfg         # Installations- & Modulkonfiguration
+│   └── hostapd.tpl / dnsmasq.tpl / ...
+├── main/
+│   └── warrent_buff_wiffty-v.0.1.py   # CLI-Entry Point
+└── README.md
+
+⚡ Installation & Setup
+Systemvoraussetzungen (Debian/Ubuntu)
+
+bash
+sudo apt update
+sudo apt install -y hashcat aircrack-ng crunch dnsmasq hostapd mdk4 reaver python3 python3-pip
+pip3 install -r requirements.txt
+
+Python Requirements (Ausschnitt)
+    scapy
+    colorama
+    sqlite3
+    (und weitere, siehe requirements.txt)
+🚀 Schnellstart
+
+bash
+python3 main/warrent_buff_wiffty-v.0.1.py
+
+Optionen:
+    WPA-only, Evil Twin only, Wordlist-Gen, Datenbank-Analyse etc.
+🧪 Coming Soon
+
+    🌍 GUI mit Tkinter & OpenGL
+    📡 Bluetooth/BLE-Scan- und Angriffsmodule
+    🚀 Drohnen-Exfiltration Bridge (WLAN + SDR)
+    🧬 Lokales GPT-Modell via ollama / llama.cpp
+
+🛡️ Sicherheit & Legal
+
+Achtung: Dieses Framework ist ausschließlich für den legalen Einsatz in eigenen Netzwerken oder mit
+ausdrücklicher Erlaubnis des Netzwerkbetreibers gedacht!
+Missbrauch ist strafbar.
+👨‍💻 Autor & Credits
+
+Jan Schröder aka buff-sec
+Projektleitung: The PentState / Little Zucker Berg / TheBigPingTheory
+⚖️ Lizenz
+
+GPLv3 – Knowledge is Free. Share it.
+
+Pull Requests, Feature-Ideen & Bug-Reports sind willkommen!
+Stay safe. Hack smart.
