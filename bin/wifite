@@ -9,14 +9,16 @@ import importlib.util
 def main():
     dependencies = [
         # Python-Module
-        Dependency("scapy"),
+        Dependency("scapy", is_mandatory=False),
+        Dependency("matplotlib", is_mandatory=False),
+        Dependency("visualyzer", is_mandatory=False),
         Dependency("pyrit", is_mandatory=False),
-
+        Dependency("crunch", is_mandatory=True),
         # Programme
-        ProgramDependency("aircrack-ng", "aircrack-ng --help"),
-        ProgramDependency("reaver", "reaver --help"),
-        ProgramDependency("bully", "bully --help"),
-        ProgramDependency("wash", "wash --help"),
+        ProgramDependency("aircrack-ng", "aircrack-ng --help", is_mandatory=False),
+        ProgramDependency("reaver", "reaver --help", is_mandatory=False),
+        ProgramDependency("bully", "bully --help", is_mandatory=False),
+        ProgramDependency("wash", "wash --help", is_mandatory=False),
         ProgramDependency("hashcat", "hashcat --help", is_mandatory=False),
 
         # JAN optional
