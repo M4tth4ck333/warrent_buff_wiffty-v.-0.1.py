@@ -1,4 +1,82 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-from wifite import __main__
-__main__.entry_point()
+import sys
+import subprocess
+import importlib.util
+
+# Dependency-Klassen siehe vorherigen Code ...
+
+def main():
+    dependencies = [
+        # Python-Module
+        Dependency("scapy"),
+        Dependency("pyrit", is_mandatory=False),
+
+        # Programme
+        ProgramDependency("aircrack-ng", "aircrack-ng --help"),
+        ProgramDependency("reaver", "reaver --help"),
+        ProgramDependency("bully", "bully --help"),
+        ProgramDependency("wash", "wash --help"),
+        ProgramDependency("hashcat", "hashcat --help", is_mandatory=False),
+
+        # JAN optional
+        Dependency("jan_module", is_mandatory=False),
+    ]
+
+    if not check_dependencies(dependencies):
+        print("Abbruch wegen fehlender Abhängigkeiten.")
+        sys.exit(1)
+
+    print("Alle wichtigen Abhängigkeiten sind vorhanden oder wurden akzeptiert.\n")
+
+    # ============ JAN-Menü (auskommentiert) ============
+    """
+    while True:
+        print("\n== JAN Verwaltung ==")
+        print("1) JAN starten")
+        print("2) JAN stoppen")
+        print("3) JAN Status prüfen")
+        print("4) Weiter zum Hauptprogramm")
+        choice = input("Auswahl: ").strip()
+
+        if choice == '1':
+            print("Starte JAN...")
+            # JAN-Startcode hier einfügen
+        elif choice == '2':
+            print("Stoppe JAN...")
+            # JAN-Stoppcode hier einfügen
+        elif choice == '3':
+            print("Prüfe JAN Status...")
+            # Statusabfrage einfügen
+        elif choice == '4':
+            break
+        else:
+            print("Ungültige Auswahl.")
+    """
+    # ================================================
+
+    # ============ Visualyzer Wrapper (auskommentiert) ============
+    """
+    # VisualyzerWrapper (später):
+    # Diese Klasse soll visualyzer.py kapseln und über eine CLI oder API
+    # starten, stoppen und visualisieren.
+    
+    from visualyzer.visualyzer import VisualyzerWrapper
+
+    vis = VisualyzerWrapper(config={
+        'interface': 'wlan0mon',
+        'enable_ap_tracking': True,
+        'realtime_mode': True,
+        'output_path': './visuals'
+    })
+
+    vis.run()  # startet die Visualisierung
+    """
+    # =============================================================
+
+    print("Starte Hauptprogramm...")
+    from wifite import __main__
+    __main__.entry_point()
+
+if __name__ == "__main__":
+    main()
