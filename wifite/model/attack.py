@@ -1,41 +1,30 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from typing import Optional, Callable
 
-import time
+class TargetNotFoundError(Exception):
+    pass
 
-class Attack(object):
-    '''Contains functionality common to all attacks.'''
-
-    target_wait = 60
+class Attack:
+    target_wait: int = 60
 
     def __init__(self, target):
         self.target = target
 
     def run(self):
-        raise Exception('Unimplemented method: run')
+        raise NotImplementedError('run() must be implemented by subclass')
 
-    def wait_for_target(self, airodump):
-        '''Waits for target to appear in airodump.'''
+    def wait_for_target(self, airodump, callback: Optional[Callable[[int], None]] = None):
         start_time = time.time()
-        targets = airodump.get_targets(apply_filter=False)
-        while len(targets) == 0:
-            # Wait for target to appear in airodump.
-            if int(time.time() - start_time) > Attack.target_wait:
-                raise Exception('Target did not appear after %d seconds, stopping' % Attack.target_wait)
+        while True:
+            targets = airodump.get_targets(apply_filter=False)
+            if targets:
+                for t in targets:
+                    if t.bssid == self.target.bssid:
+                        return t
+            elapsed = int(time.time() - start_time)
+            if elapsed > self.target_wait:
+                raise TargetNotFoundError(f'Target did not appear after {self.target_wait} seconds')
+            if callback:
+                callback(elapsed)
             time.sleep(1)
-            targets = airodump.get_targets()
-            continue
-
-        # Ensure this target was seen by airodump
-        airodump_target = None
-        for t in targets:
-            if t.bssid == self.target.bssid:
-                airodump_target = t
-                break
-
-        if airodump_target is None:
-            raise Exception(
-                'Could not find target (%s) in airodump' % self.target.bssid)
-
-        return airodump_target
-
