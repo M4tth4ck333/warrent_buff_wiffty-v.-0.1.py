@@ -54,24 +54,29 @@ Es kombiniert klassische Angriffe (WEP/WPA/WPS), KI-gestützte Zielauswahl und P
         GUI (Tkinter, OpenGL), Bluetooth/BLE, Drohnen-Bridge, lokale GPT-Modelle
 
 🗂️ Projektstruktur (modular & erweiterbar)
+    
+                        wifite/
+                        ├── models/
+                        │   ├── dependency.py  # Basisklasse Dependency
+                        │   ├── target.py
+                        │   ├── attack.py
+                        │   └── wrapper.py     # Tool-Wrapper Basisklasse (common)
+                        ├── tools/
+                        │   ├── aircrack.py
+                        │   ├── hashcat.py
+                        │   ├── crunch.py
+                        │   └── airmon.py
+                        ├── attack/
+                        │   ├── wps.py
+                        │   ├── wpa.py
+                        │   └── wep.py
+                        ├── util/
+                        │   ├── output.py
+                        │   └── process.py
+                        ├── config.py
+                        ├── main.py            # Einstiegspunkt
+                        └── README.md
 
-
-        warrent_buff_wiffty/
-        ├── attack/
-        │   ├── evil_twin/        # Hostapd, DNSMasq, Deauth, Validator, Webserver
-        │   └── pmkid.py          # PMKID Capture & Hash Conversion
-        ├── tools/
-        │   ├── cracker_base.py   # Cracker-Wrapper
-        │   └── hashcat.py / crunch.py / aircrack.py / ...
-        ├── db/
-        │   └── wifite.db         # SQLite-DB: Targets, Passwortversuche etc.
-        ├── config/
-        │   ├── setup.cfg         # Installations- & Modulkonfiguration
-        │   └── hostapd.tpl / dnsmasq.tpl / ...
-        ├── main/
-        │   └── warrent_buff_wiffty-v.0.1.py   # CLI-Entry Point
-        └── README.md
-        
 ⚡ Installation & Setup
 Systemvoraussetzungen (Debian/Ubuntu)
 
